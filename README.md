@@ -1,3 +1,5 @@
+***NOTE: this repo is now deprecated. Instead, I recommend keras users use https://github.com/delftrobotics/keras-retinanet which runs faster and is more accurate.***
+
 # keras-frcnn
 Keras implementation of Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.
 
