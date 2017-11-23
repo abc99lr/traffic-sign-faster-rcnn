@@ -18,24 +18,25 @@ from keras.utils.data_utils import get_file
 from keras import backend as K
 from keras_frcnn.RoiPoolingConv import RoiPoolingConv
 
-
+"""
 def get_weight_path():
     if K.image_dim_ordering() == 'th':
         print('pretrained weights not available for VGG with theano backend')
         return
     else:
         return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
-
+"""
 
 def get_img_output_length(width, height):
     def get_output_length(input_length):
-        return input_length//16
+        # -------------this is changed -------------
+        return input_length/4
 
     return get_output_length(width), get_output_length(height)    
 
 def nn_base(input_tensor=None, trainable=False):
 
-
+    """
     # Determine proper input shape
     if K.image_dim_ordering() == 'th':
         input_shape = (3, None, None)
@@ -84,11 +85,27 @@ def nn_base(input_tensor=None, trainable=False):
     # x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
     return x
+    """    
+    
+    if input_tensor is None:
+        img_input = Input(shape=(None, None, 3))
+    else:
+        if not K.is_keras_tensor(input_tensor):
+            img_input = Input(tensor=input_tensor, shape=(None, None, 3))
+        else:
+            img_input = input_tensor
+            
+    x = Conv2D(filters=32, kernel_size=(3,3), padding="same", activation='relu')(img_input)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Conv2D(filters=64, kernel_size=(5,5), padding="same", activation='relu')(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+
+    return x
 
 def rpn(base_layers, num_anchors):
 
-    x = Conv2D(512, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
-
+    #x = Conv2D(512, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
+    x = Conv2D(256, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x_class = Conv2D(num_anchors, (1, 1), activation='sigmoid', kernel_initializer='uniform', name='rpn_out_class')(x)
     x_regr = Conv2D(num_anchors * 4, (1, 1), activation='linear', kernel_initializer='zero', name='rpn_out_regress')(x)
 
