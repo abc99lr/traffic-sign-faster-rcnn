@@ -1,3 +1,4 @@
+import os 
 import cv2
 import numpy as np
 
@@ -33,16 +34,22 @@ def get_data(input_path):
 			if filename not in all_imgs:
 				all_imgs[filename] = {}
 				
+				filename = get_dir_path(input_path) + '/' + filename
+
 				img = cv2.imread(filename)
 				(rows,cols) = img.shape[:2]
 				all_imgs[filename]['filepath'] = filename
 				all_imgs[filename]['width'] = cols
 				all_imgs[filename]['height'] = rows
 				all_imgs[filename]['bboxes'] = []
-				if np.random.randint(0,6) > 0:
-					all_imgs[filename]['imageset'] = 'trainval'
-				else:
-					all_imgs[filename]['imageset'] = 'test'
+
+				# we use all images as training images 
+				all_imgs[filename]['imageset'] = 'train'
+
+				# if np.random.randint(0,6) > 0:
+				# 	all_imgs[filename]['imageset'] = 'trainval'
+				# else:
+				# 	all_imgs[filename]['imageset'] = 'test'
 
 			all_imgs[filename]['bboxes'].append({'class': class_name, 'x1': int(x1), 'x2': int(x2), 'y1': int(y1), 'y2': int(y2)})
 
@@ -61,4 +68,5 @@ def get_data(input_path):
 		
 		return all_data, classes_count, class_mapping
 
-
+def get_dir_path(input_path):
+	return os.path.dirname(input_path)
