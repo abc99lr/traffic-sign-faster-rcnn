@@ -1,3 +1,4 @@
+
 import os 
 import cv2
 import numpy as np
@@ -69,4 +70,8 @@ def get_data(input_path):
 		return all_data, classes_count, class_mapping
 
 def get_dir_path(input_path):
+
 	return os.path.dirname(input_path)
+
+
+

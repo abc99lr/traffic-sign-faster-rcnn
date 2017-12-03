@@ -10,7 +10,7 @@ lambda_rpn_class = 1.0
 lambda_cls_regr = 1.0
 lambda_cls_class = 1.0
 
-epsilon = 1e-4
+epsilon = 1e-5
 
 
 def rpn_loss_regr(num_anchors):
