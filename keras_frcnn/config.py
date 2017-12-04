@@ -7,7 +7,10 @@ class Config:
 
         self.verbose = True
 
-        self.network = 'resnet50'
+        self.network = 'zfnet'
+
+        # img trained in each epoch
+        self.epoch_length = 600
 
         # setting for data augmentation
         self.use_horizontal_flips = False
@@ -28,10 +31,10 @@ class Config:
         self.img_scaling_factor = 1.0
 
         # number of ROIs at once
-        self.num_rois = 4
+        self.num_rois = 32	 # defaulted to 32 in train and test
 
         # stride at the RPN (this depends on the network configuration)
-        self.rpn_stride = 4
+        self.rpn_stride = 8
 
         self.balanced_classes = False
 

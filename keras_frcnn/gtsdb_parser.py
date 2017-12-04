@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 
+'''
 def get_data(input_path):
     found_bg = False
     all_imgs = {}
@@ -70,3 +71,4 @@ def get_data(input_path):
 
 def get_dir_path(input_path):
     return os.path.dirname(input_path)
+'''

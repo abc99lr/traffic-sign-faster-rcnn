@@ -85,7 +85,7 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 
     # calculate the output map size based on the network architecture
 
-    (output_width, output_height) = img_length_calc_function(resized_width, resized_height)
+    (output_width, output_height) = img_length_calc_function(C, resized_width, resized_height)
 
     n_anchratios = len(anchor_ratios)
 

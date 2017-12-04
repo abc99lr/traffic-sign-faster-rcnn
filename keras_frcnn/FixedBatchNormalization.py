@@ -2,7 +2,7 @@ from keras.engine import Layer, InputSpec
 from keras import initializers, regularizers
 from keras import backend as K
 
-
+'''
 class FixedBatchNormalization(Layer):
 
     def __init__(self, epsilon=1e-3, axis=-1,
@@ -81,3 +81,4 @@ class FixedBatchNormalization(Layer):
                   'beta_regularizer': self.beta_regularizer.get_config() if self.beta_regularizer else None}
         base_config = super(FixedBatchNormalization, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+'''
