@@ -92,3 +92,4 @@ ENV/
 *.h5
 *.hdf5
 test.py
+copy.sh
