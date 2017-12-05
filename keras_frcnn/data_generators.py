@@ -9,6 +9,9 @@ import itertools
 
 
 def union(au, bu, area_intersection):
+    """
+    a and b should be (x1,y1,x2,y2)
+    """
     area_a = (au[2] - au[0]) * (au[3] - au[1])
     area_b = (bu[2] - bu[0]) * (bu[3] - bu[1])
     area_union = area_a + area_b - area_intersection
@@ -16,6 +19,9 @@ def union(au, bu, area_intersection):
 
 
 def intersection(ai, bi):
+    """
+    a and b should be (x1,y1,x2,y2)
+    """
     x = max(ai[0], bi[0])
     y = max(ai[1], bi[1])
     w = min(ai[2], bi[2]) - x
@@ -26,18 +32,20 @@ def intersection(ai, bi):
 
 
 def iou(a, b):
-    # a and b should be (x1,y1,x2,y2)
-
+    """
+    a and b should be (x1,y1,x2,y2)
+    """
     if a[0] >= a[2] or a[1] >= a[3] or b[0] >= b[2] or b[1] >= b[3]:
         return 0.0
-
-    area_i = intersection(a, b)
-    area_u = union(a, b, area_i)
-
-    return float(area_i) / float(area_u + 1e-6)
+    I = intersection(a, b)
+    U = union(a, b, area_i)
+    return float(I) / float(1e-5 + U)
 
 
 def get_new_img_size(width, height, img_min_side=600):
+    """
+    get image dimensions for resizing
+    """
     if width <= height:
         f = float(img_min_side) / width
         resized_height = int(f * height)
@@ -58,13 +66,10 @@ class SampleSelector:
         self.curr_class = next(self.class_cycle)
 
     def skip_sample_for_balanced_class(self, img_data):
-
         class_in_img = False
 
         for bbox in img_data['bboxes']:
-
             cls_name = bbox['class']
-
             if cls_name == self.curr_class:
                 class_in_img = True
                 self.curr_class = next(self.class_cycle)
@@ -82,12 +87,11 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
     anchor_sizes = C.anchor_box_scales
     anchor_ratios = C.anchor_box_ratios
     num_anchors = len(anchor_sizes) * len(anchor_ratios)
+    n_anchratios = len(anchor_ratios)
 
     # calculate the output map size based on the network architecture
-
     (output_width, output_height) = img_length_calc_function(C, resized_width, resized_height)
-
-    n_anchratios = len(anchor_ratios)
+    output_width, output_height = int(output_width), int(output_height)
 
     # initialise empty output objectives
     y_rpn_overlap = np.zeros((output_height, output_width, num_anchors))
@@ -95,7 +99,6 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
     y_rpn_regr = np.zeros((output_height, output_width, num_anchors * 4))
 
     num_bboxes = len(img_data['bboxes'])
-
     num_anchors_for_bbox = np.zeros(num_bboxes).astype(int)
     best_anchor_for_bbox = -1*np.ones((num_bboxes, 4)).astype(int)
     best_iou_for_bbox = np.zeros(num_bboxes).astype(np.float32)
@@ -128,7 +131,6 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
                     continue
 
                 for jy in range(output_height):
-
                     # y-coordinates of the current anchor box
                     y1_anc = downscale * (jy + 0.5) - anchor_y / 2
                     y2_anc = downscale * (jy + 0.5) + anchor_y / 2
@@ -198,7 +200,6 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
                         y_rpn_regr[jy, ix, start:start+4] = best_regr
 
     # we ensure that every bbox has at least one positive RPN region
-
     for idx in range(num_anchors_for_bbox.shape[0]):
         if num_anchors_for_bbox[idx] == 0:
             # no box with an IOU greater than zero ...
@@ -264,14 +265,21 @@ class threadsafe_iter:
 
 
 def threadsafe_generator(f):
-    """A decorator that takes a generator function and makes it thread-safe.
+    """
+    A decorator that takes a generator function and makes it thread-safe.
     """
     def g(*a, **kw):
         return threadsafe_iter(f(*a, **kw))
     return g
 
-def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backend, mode='train'):
 
+def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backend, mode='train'):
+    """
+    Find ground-truth anchors:
+    gt positive anchors: overlap with ground-truth bbox above threshold rpn_max_overlap
+    gt negative anchors: overlap with ground-truth bbox below threshold rpn_min_overlap
+    do not train anchors with overlap in between
+    """
     # The following line is not useful with Python 3.5, it is kept for the legacy
     # all_img_data = sorted(all_img_data)
 
@@ -283,27 +291,32 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
 
         for img_data in all_img_data:
             try:
-
                 if C.balanced_classes and sample_selector.skip_sample_for_balanced_class(img_data):
                     continue
 
                 # read in image, and optionally add augmentation
-
                 if mode == 'train':
                     img_data_aug, x_img = data_augment.augment(img_data, C, augment=True)
                 else:
                     img_data_aug, x_img = data_augment.augment(img_data, C, augment=False)
+                ''' img_data = {'filepath': '../dataset/PNG_train/00269.png', 'width': 1360, 
+                'height': 800, 'bboxes': [{'class': '9', 'x1': 966, 'x2': 990, 'y1': 430, 
+                'y2': 454}], 'imageset': 'trainval'} '''
+
+                ''' img_data_aug = {'filepath': '../dataset/PNG_train/00269.png', 'width': 1360, 
+                'height': 800, 'bboxes': [{'class': '9', 'x1': 966, 'x2': 990, 'y1': 430, 
+                'y2': 454}], 'imageset': 'trainval'} '''
+
+                ''' x_img = RGB image (800, 1360, 3)'''
 
                 (width, height) = (img_data_aug['width'], img_data_aug['height'])
                 (rows, cols, _) = x_img.shape
-
                 assert cols == width
                 assert rows == height
 
                 # get image dimensions for resizing
                 (resized_width, resized_height) = get_new_img_size(width, height, C.im_size)
-
-                # resize the image so that smalles side is length = 600px
+                # resize the image so that smalles side is length = 600 pixel
                 x_img = cv2.resize(x_img, (resized_width, resized_height), interpolation=cv2.INTER_CUBIC)
 
                 try:
@@ -312,13 +325,12 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, backen
                     continue
 
                 # Zero-center by mean pixel, and preprocess image
-
-                x_img = x_img[:,:, (2, 1, 0)]  # BGR -> RGB
+                x_img = x_img[:, :, (2, 1, 0)]  # BGR -> RGB
                 x_img = x_img.astype(np.float32)
                 x_img[:, :, 0] -= C.img_channel_mean[0]
                 x_img[:, :, 1] -= C.img_channel_mean[1]
                 x_img[:, :, 2] -= C.img_channel_mean[2]
-                x_img /= C.img_scaling_factor
+                #x_img /= C.img_scaling_factor
 
                 x_img = np.transpose(x_img, (2, 0, 1))
                 x_img = np.expand_dims(x_img, axis=0)

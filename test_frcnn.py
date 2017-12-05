@@ -194,16 +194,16 @@ if __name__ == "__main__":
                 ROIs_padded[0, curr_shape[1]:, :] = ROIs[0, 0, :]
                 ROIs = ROIs_padded
 
-            # [P_cls, P_regr] = model_classifier_only.predict([F, ROIs])
-            [P_cls, P_regr] = model_classifier.predict([F, ROIs])
+            # [pred_cls, pred_regr] = model_classifier_only.predict([F, ROIs])
+            [pred_cls, pred_regr] = model_classifier.predict([F, ROIs])
 
-            for ii in range(P_cls.shape[1]):
+            for ii in range(pred_cls.shape[1]):
 
-                if np.max(P_cls[0, ii, :]) < classification_threshold or np.argmax(P_cls[0, ii, :]) == (P_cls.shape[2] - 1):
-                    pass
-                    # continue
+                if np.max(pred_cls[0, ii, :]) < classification_threshold or np.argmax(pred_cls[0, ii, :]) == (pred_cls.shape[2] - 1):
+                    #pass
+                    continue        # avoid plotting background bbox
 
-                cls_name = class_mapping[np.argmax(P_cls[0, ii, :])]
+                cls_name = class_mapping[np.argmax(pred_cls[0, ii, :])]
 
                 if cls_name not in bboxes:
                     bboxes[cls_name] = []
@@ -211,9 +211,9 @@ if __name__ == "__main__":
 
                 (x, y, w, h) = ROIs[0, ii, :]
 
-                cls_num = np.argmax(P_cls[0, ii, :])	 # index of predicted class
+                cls_num = np.argmax(pred_cls[0, ii, :])	 # index of predicted class
                 try:
-                    (tx, ty, tw, th) = P_regr[0, ii, 4*cls_num:4*(cls_num+1)]
+                    (tx, ty, tw, th) = pred_regr[0, ii, 4*cls_num:4*(cls_num+1)]
                     tx /= C.classifier_regr_std[0]
                     ty /= C.classifier_regr_std[1]
                     tw /= C.classifier_regr_std[2]
@@ -222,12 +222,12 @@ if __name__ == "__main__":
                 except:
                     pass
                 bboxes[cls_name].append([C.rpn_stride*x, C.rpn_stride*y, C.rpn_stride*(x+w), C.rpn_stride*(y+h)])
-                probs[cls_name].append(np.max(P_cls[0, ii, :]))
+                probs[cls_name].append(np.max(pred_cls[0, ii, :]))
 
         bboxes.pop('bg')  # added to avoid plotting background bbox
         probs.pop('bg')  # added to avoid plotting background bbox
 
-        all_dets = []
+        pred_bboxs = []
 
         for key in bboxes:
             bbox = np.array(bboxes[key])
@@ -242,7 +242,7 @@ if __name__ == "__main__":
                 cv2.rectangle(img,(real_x1, real_y1), (real_x2, real_y2), (int(class_to_color[key][0]), int(class_to_color[key][1]), int(class_to_color[key][2])),2)
 
                 textLabel = '{}: {}'.format(key,int(100*new_probs[jk]))
-                all_dets.append((key,100*new_probs[jk]))
+                pred_bboxs.append((key,100*new_probs[jk]))
 
                 (retval,baseLine) = cv2.getTextSize(textLabel,cv2.FONT_HERSHEY_COMPLEX,1,1)
                 textOrg = (real_x1, real_y1-0)
@@ -252,7 +252,7 @@ if __name__ == "__main__":
                 cv2.putText(img, textLabel, textOrg, cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1)
 
         print('Elapsed time = {}'.format(time.time() - start_time))
-        print("all_dets:", all_dets)
+        print("pred_bboxs:", pred_bboxs)
         # cv2.imshow('img', img)
         # cv2.waitKey(0)
-        cv2.imwrite('./results_imgs/{}.png'.format(idx), img)  ####### modify idx to img_name
+        cv2.imwrite('./results_imgs/{}'.format(idx), img_name)  ####### modify idx to img_name

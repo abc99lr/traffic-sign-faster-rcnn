@@ -25,9 +25,9 @@ def calc_iou(R, img_data, C, class_mapping):
     y_class_num = []
     y_class_regr_coords = []
     y_class_regr_label = []
-    IoUs = [] # for debugging only
+    IoUs = []    # for debugging only
 
-    for ix in range(R.shape[0]):
+    for ix in range(R.shape[0]):    	# R = [boxes, probs]
         (x1, y1, x2, y2) = R[ix, :]
         x1 = int(round(x1))
         y1 = int(round(y1))
@@ -55,12 +55,13 @@ def calc_iou(R, img_data, C, class_mapping):
                 cls_name = 'bg'
             elif C.classifier_max_overlap <= best_iou:
                 cls_name = bboxes[best_bbox]['class']
-                cxg = (gta[best_bbox, 0] + gta[best_bbox, 1]) / 2.0
+                cxg = (gta[best_bbox, 0] + gta[best_bbox, 1]) / 2.0		# center of gt box
                 cyg = (gta[best_bbox, 2] + gta[best_bbox, 3]) / 2.0
 
-                cx = x1 + w / 2.0
+                cx = x1 + w / 2.0   	# center of predicted box
                 cy = y1 + h / 2.0
 
+                # parameterization
                 tx = (cxg - cx) / float(w)
                 ty = (cyg - cy) / float(h)
                 tw = np.log((gta[best_bbox, 1] - gta[best_bbox, 0]) / float(w))
@@ -70,8 +71,8 @@ def calc_iou(R, img_data, C, class_mapping):
                 raise RuntimeError
 
         class_num = class_mapping[cls_name]
-        class_label = len(class_mapping) * [0]
-        class_label[class_num] = 1
+        class_label = len(class_mapping) * [0]      	# [0, 0, ... 0]
+        class_label[class_num] = 1				# form one-hot label
         y_class_num.append(copy.deepcopy(class_label))
         coords = [0] * 4 * (len(class_mapping) - 1)
         labels = [0] * 4 * (len(class_mapping) - 1)
@@ -89,11 +90,13 @@ def calc_iou(R, img_data, C, class_mapping):
     if len(x_roi) == 0:
         return None, None, None, None
 
-    X = np.array(x_roi)
-    Y1 = np.array(y_class_num)
-    Y2 = np.concatenate([np.array(y_class_regr_label),np.array(y_class_regr_coords)],axis=1)
+    ROIs = np.array(x_roi)				    # ROIs = arr of predicted RoI ([x1, y1, w, h])
+    pred_cls = np.array(y_class_num)		# pred_cls = arr of one-hot class label
+    # pred_regr = arr of regr labels and coords
+    pred_regr = np.concatenate([np.array(y_class_regr_label),np.array(y_class_regr_coords)],axis=1)
+    # IoUs = list of IoU
+    return np.expand_dims(ROIs, axis=0), np.expand_dims(pred_cls, axis=0), np.expand_dims(pred_regr, axis=0), IoUs
 
-    return np.expand_dims(X, axis=0), np.expand_dims(Y1, axis=0), np.expand_dims(Y2, axis=0), IoUs
 
 def apply_regr(x, y, w, h, tx, ty, tw, th):
     try:
@@ -119,6 +122,7 @@ def apply_regr(x, y, w, h, tx, ty, tw, th):
     except Exception as e:
         print(e)
         return x, y, w, h
+
 
 def apply_regr_np(X, T):
     try:
@@ -151,6 +155,7 @@ def apply_regr_np(X, T):
         print(e)
         return X
 
+
 def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
     # code used from here: http://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
     # if there are no boxes, return an empty list
@@ -180,8 +185,7 @@ def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
     # sort the bounding boxes
     idxs = np.argsort(probs)
 
-    # keep looping while some indexes still remain in the indexes
-    # list
+    # keep looping while some indexes still remain in the indexes list
     while len(idxs) > 0:
         # grab the last index in the indexes list and add the
         # index value to the list of picked indexes
@@ -219,6 +223,7 @@ def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
     probs = probs[pick]
     return boxes, probs
 
+
 import time
 def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=300,overlap_thresh=0.9):
 
@@ -228,24 +233,29 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
     anchor_ratios = C.anchor_box_ratios
 
     assert rpn_layer.shape[0] == 1
-
+    '''
     if dim_ordering == 'th':
         (rows,cols) = rpn_layer.shape[2:]
 
     elif dim_ordering == 'tf':
         (rows, cols) = rpn_layer.shape[1:3]
+    '''
+    (rows, cols) = rpn_layer.shape[1:3]
 
     curr_layer = 0
+    '''
     if dim_ordering == 'tf':
         A = np.zeros((4, rpn_layer.shape[1], rpn_layer.shape[2], rpn_layer.shape[3]))
     elif dim_ordering == 'th':
         A = np.zeros((4, rpn_layer.shape[2], rpn_layer.shape[3], rpn_layer.shape[1]))
+    '''
+    A = np.zeros((4, rpn_layer.shape[1], rpn_layer.shape[2], rpn_layer.shape[3]))
 
     for anchor_size in anchor_sizes:
         for anchor_ratio in anchor_ratios:
 
-            anchor_x = (anchor_size * anchor_ratio[0])/C.rpn_stride
-            anchor_y = (anchor_size * anchor_ratio[1])/C.rpn_stride
+            anchor_x = (anchor_size * anchor_ratio[0]) / C.rpn_stride
+            anchor_y = (anchor_size * anchor_ratio[1]) / C.rpn_stride
             if dim_ordering == 'th':
                 regr = regr_layer[0, 4 * curr_layer:4 * curr_layer + 4, :, :]
             else:
@@ -254,6 +264,7 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
 
             X, Y = np.meshgrid(np.arange(cols),np. arange(rows))
 
+            # convert to (x, y, w, h)
             A[0, :, :, curr_layer] = X - anchor_x/2
             A[1, :, :, curr_layer] = Y - anchor_y/2
             A[2, :, :, curr_layer] = anchor_x

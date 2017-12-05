@@ -18,7 +18,7 @@ class Config:
         self.rot_90 = False
 
         # anchor box scales
-        self.anchor_box_scales = [16, 32, 64]
+        self.anchor_box_scales = [8, 16, 32, 64]
 
         # anchor box ratios
         self.anchor_box_ratios = [[1, 1]]
@@ -34,7 +34,7 @@ class Config:
         self.num_rois = 32	 # defaulted to 32 in train and test
 
         # stride at the RPN (this depends on the network configuration)
-        self.rpn_stride = 8
+        self.rpn_stride = 4
 
         self.balanced_classes = False
 

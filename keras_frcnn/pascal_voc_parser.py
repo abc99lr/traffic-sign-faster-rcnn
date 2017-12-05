@@ -3,7 +3,7 @@ import cv2
 import xml.etree.ElementTree as ET
 import numpy as np
 
-
+'''
 def get_data(input_path):
     all_imgs = []
 
@@ -102,3 +102,5 @@ def get_data(input_path):
                 print(e)
                 continue
     return all_imgs, classes_count, class_mapping
+'''
+

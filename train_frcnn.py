@@ -215,19 +215,19 @@ if __name__ == "__main__":
                 # R = bboxes (300 ,4)
                 R = roi_helpers.rpn_to_roi(P_rpn[0], P_rpn[1], C, K.image_dim_ordering(), use_regr=True, overlap_thresh=0.7, max_boxes=300)
                 # note: calc_iou converts from (x1,y1,x2,y2) to (x,y,w,h) format
-                # X2 = arr of predicted RoI ([x1, y1, w, h])
-                # Y1 = arr of one-hot class label
-                # Y2 = arr of regr labels and coords
+                # pred_ROIs = arr of predicted RoI ([x1, y1, w, h])
+                # pred_cls = arr of one-hot class label
+                # pred_regr = arr of regr labels and coords
                 # IoU = list of IoU
-                X2, Y1, Y2, IouS = roi_helpers.calc_iou(R, img_data, C, class_mapping)
+                pred_ROIs, pred_cls, pred_regr, IouS = roi_helpers.calc_iou(R, img_data, C, class_mapping)
 
-                if X2 is None:
+                if pred_ROIs is None:
                     rpn_accuracy_rpn_monitor.append(0)
                     rpn_accuracy_for_epoch.append(0)
                     continue
 
-                neg_samples = np.where(Y1[0, :, -1] == 1)		# is background
-                pos_samples = np.where(Y1[0, :, -1] == 0)  		# is not background
+                neg_samples = np.where(pred_cls[0, :, -1] == 1)		# is background
+                pos_samples = np.where(pred_cls[0, :, -1] == 0)  		# is not background
 
                 if len(neg_samples) > 0:
                     neg_samples = neg_samples[0]		# all neg samples
@@ -264,7 +264,7 @@ if __name__ == "__main__":
                         sel_samples = random.choice(pos_samples)
 
                 print("DEBUGGING: 236: CHECK")
-                loss_class = model_classifier.train_on_batch([X, X2[:, sel_samples, :]], [Y1[:, sel_samples, :], Y2[:, sel_samples, :]])
+                loss_class = model_classifier.train_on_batch([X, pred_ROIs[:, sel_samples, :]], [pred_cls[:, sel_samples, :], pred_regr[:, sel_samples, :]])
 
                 losses[iter_num, 0] = loss_rpn[1]  # RPN classifier loss
                 losses[iter_num, 1] = loss_rpn[2]  # RPN regression loss

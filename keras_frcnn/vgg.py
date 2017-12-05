@@ -18,7 +18,7 @@ from keras.utils.data_utils import get_file
 from keras import backend as K
 from keras_frcnn.RoiPoolingConv import RoiPoolingConv
 
-
+'''
 def get_weight_path():
     if K.image_dim_ordering() == 'th':
         print('pretrained weights not available for VGG with theano backend')
@@ -120,4 +120,4 @@ def classifier(base_layers, input_rois, num_rois, nb_classes = 21, trainable=Fal
 
     return [out_class, out_regr]
 
-
+'''

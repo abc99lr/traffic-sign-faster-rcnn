@@ -16,6 +16,8 @@ from keras import backend as K
 from keras_frcnn.RoiPoolingConv import RoiPoolingConv
 from keras_frcnn.FixedBatchNormalization import FixedBatchNormalization
 
+
+'''
 def get_weight_path():
     if K.image_dim_ordering() == 'th':
         return 'resnet50_weights_th_dim_ordering_th_kernels_notop.h5'
@@ -246,3 +248,4 @@ def classifier(base_layers, input_rois, num_rois, nb_classes = 21, trainable=Fal
     out_regr = TimeDistributed(Dense(4 * (nb_classes-1), activation='linear', kernel_initializer='zero'), name='dense_regress_{}'.format(nb_classes))(out)
     return [out_class, out_regr]
 
+'''
