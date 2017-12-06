@@ -153,10 +153,12 @@ if __name__ == "__main__":
     classification_threshold = 0.8		# threshold above which we classify as positive
     # visualise = True
 
+    counter = 0
     for idx, img_name in enumerate(sorted(os.listdir(img_path))):
         if not img_name.lower().endswith(('.bmp', '.jpeg', '.jpg', '.png', '.tif', '.tiff')):
             continue
         print("img {}: {}".format(str(counter), img_name))
+        counter += 1
         start_time = time.time()
         filepath = os.path.join(img_path, img_name)
 

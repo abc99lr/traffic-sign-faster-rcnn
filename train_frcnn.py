@@ -217,6 +217,8 @@ if __name__ == "__main__":
     class_mapping_inv = {v: k for k, v in class_mapping.items()}
     vis = True
 
+    prog_start_time = time.time()
+
     print('Starting training')
     for epoch_num in range(num_epochs):
         progbar = generic_utils.Progbar(C.epoch_length)
