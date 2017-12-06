@@ -260,4 +260,4 @@ if __name__ == "__main__":
         print("pred_bboxs:", pred_bboxs)
         # cv2.imshow('img', img)
         # cv2.waitKey(0)
-        cv2.imwrite('./results_imgs/{}'.format(idx), img_name)  ####### modify idx to img_name
+        cv2.imwrite('./results_imgs/{}'.format(img_name), img)  ####### modify idx to img_name
