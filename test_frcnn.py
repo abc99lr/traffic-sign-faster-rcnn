@@ -205,8 +205,8 @@ if __name__ == "__main__":
             for ii in range(pred_cls.shape[1]):
 
                 if np.max(pred_cls[0, ii, :]) < classification_threshold or np.argmax(pred_cls[0, ii, :]) == (pred_cls.shape[2] - 1):
-                    #pass
-                    continue        # avoid plotting background bbox
+                    pass
+                    #continue        # avoid plotting background bbox
 
                 cls_name = class_mapping[np.argmax(pred_cls[0, ii, :])]
 
