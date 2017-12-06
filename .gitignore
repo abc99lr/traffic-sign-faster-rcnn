@@ -93,4 +93,3 @@ ENV/
 *.hdf5
 test.py
 copy.sh
-keras_frcnn/simple_net.py
