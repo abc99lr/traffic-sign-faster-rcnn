@@ -34,6 +34,7 @@ def set_config(options):
 
     C.model_path = options.output_weight_path
     C.num_rois = int(options.num_rois)
+    C.epoch_length = options.epoch_length
     #C.num_features = options.num_features
     if options.network == 'simple':
         C.network = 'simple'
@@ -72,6 +73,8 @@ if __name__ == "__main__":
     parser.add_option("--rot", "--rot_90", dest="rot_90", help="Augment with 90 degree rotations in training. (Default=false).", action="store_true", default=False)
 
     parser.add_option("--num_epochs", type="int", dest="num_epochs", help="Number of epochs.", default=5)
+
+    parser.add_option("--epoch_length", type="int", dest="epoch_length", help="Number of training images per epoch.", default=600)
 
     parser.add_option("--num_features", type="int", dest="num_features", help="length of feature map.", default=256)
 
