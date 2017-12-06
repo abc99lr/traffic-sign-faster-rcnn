@@ -5,7 +5,8 @@ if K.backend() == 'tensorflow':
     import tensorflow as tf
 
 class RoiPoolingConv(Layer):
-    '''ROI pooling layer for 2D inputs.
+    """
+    ROI pooling layer for 2D inputs.
     See Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition,
     K. He, X. Zhang, S. Ren, J. Sun
     # Arguments
@@ -17,7 +18,7 @@ class RoiPoolingConv(Layer):
         X_roi: (1,num_rois,4) list of rois, with ordering (x,y,w,h)
     # Output shape
         3D tensor with shape: (1, num_rois, channels, pool_size, pool_size)
-    '''
+    """
 
     def __init__(self, pool_size, num_rois, **kwargs):
 
@@ -43,12 +44,12 @@ class RoiPoolingConv(Layer):
 
 
     def compute_output_shape(self, input_shape):
-        '''
+        """
         if self.dim_ordering == 'th':
             return None, self.num_rois, self.nb_channels, self.pool_size, self.pool_size
         else:
             return None, self.num_rois, self.pool_size, self.pool_size, self.nb_channels
-        '''
+        """
         # assert self.dim_ordering == 'tf', 'dim_ordering must be tf'
         return None, self.num_rois, self.pool_size, self.pool_size, self.nb_channels
 
@@ -65,9 +66,9 @@ class RoiPoolingConv(Layer):
             w = rois[0, roi_idx, 2]
             h = rois[0, roi_idx, 3]
             
-            row_length = w / float(self.pool_size)
-            col_length = h / float(self.pool_size)
-            num_pool_regions = self.pool_size
+            #row_length = w / float(self.pool_size)
+            #col_length = h / float(self.pool_size)
+            #num_pool_regions = self.pool_size
 
             #NOTE: the RoiPooling implementation differs between theano and tensorflow due to the lack of a resize op
             # in theano. The theano implementation is much less efficient and leads to long compile times

@@ -32,16 +32,17 @@ def get_data(input_path):
             if filename not in all_imgs:
                 all_imgs[filename] = {}
 
-                file_path = os.path.dirname(input_path) + '/' + filename
+                # file_path = os.path.dirname(input_path) + '/' + filename
+                file_path = '../faster-rcnn/dataset/PNG_train/' + filename
                 img = cv2.imread(file_path)
                 (rows, cols) = img.shape[:2]
-                all_imgs[filename]['filepath'] = filename
+                all_imgs[filename]['filepath'] = file_path
                 all_imgs[filename]['width'] = cols
                 all_imgs[filename]['height'] = rows
                 all_imgs[filename]['bboxes'] = []
 
                 # we use all images as training images
-                all_imgs[filename]['imageset'] = 'trainval'     # modify to split train img for testing
+                all_imgs[filename]['imageset'] = 'train'     # modify to split train img for testing
 
                 '''
                 if np.random.randint(0,6) > 0:
@@ -65,5 +66,3 @@ def get_data(input_path):
                 class_mapping[key_to_switch] = val_to_switch
 
         return all_data, classes_count, class_mapping
-
-

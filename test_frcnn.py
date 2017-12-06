@@ -11,11 +11,12 @@ from keras import backend as K
 from keras.layers import Input
 from keras.models import Model
 from keras_frcnn import roi_helpers
-import keras_frcnn.zfnet as nn
+#import keras_frcnn.zfnet as nn
+#import keras_frcnn.simple_net as nn
 
 sys.setrecursionlimit(40000)
 
-NUM_FEATURES = 256
+#NUM_FEATURES = 256
 
 def format_img_size(img, C):
     """ formats the image size based on config """
@@ -85,12 +86,14 @@ if __name__ == "__main__":
 
     with open(config_output_filename, 'rb') as f_in:
         C = pickle.load(f_in)
-    '''
-    if C.network == 'resnet50':
-        import keras_frcnn.resnet as nn
+
+    if C.network == 'simple':
+        import keras_frcnn.simple_net as nn
+    elif C.network == 'zfnet':
+        import keras_frcnn.zfnet as nn
     elif C.network == 'vgg':
         import keras_frcnn.vgg as nn
-    '''
+
 
     # turn off any data augmentation at test time
     C.use_horizontal_flips = False
@@ -119,7 +122,7 @@ if __name__ == "__main__":
     '''
 
     input_shape_img = (None, None, 3)
-    input_shape_features = (None, None, NUM_FEATURES)
+    input_shape_features = (None, None, C.num_features)
     img_input = Input(shape=input_shape_img)
     roi_input = Input(shape=(C.num_rois, 4))
     feature_map_input = Input(shape=input_shape_features)

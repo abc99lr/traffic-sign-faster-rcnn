@@ -17,8 +17,8 @@ import keras_frcnn.roi_helpers as roi_helpers
 from keras.utils import generic_utils
 
 from keras_frcnn.simple_parser import get_data
-from keras_frcnn import zfnet as nn
-
+#from keras_frcnn import zfnet as nn
+#from keras_frcnn import simple_net as nn
 
 sys.setrecursionlimit(40000)
 
@@ -34,8 +34,24 @@ def set_config(options):
 
     C.model_path = options.output_weight_path
     C.num_rois = int(options.num_rois)
-    # C.network = 'zfnet'
-    return C
+    #C.num_features = options.num_features
+    if options.network == 'simple':
+        C.network = 'simple'
+        C.num_features = 64
+        from keras_frcnn import simple_net as nn
+    elif options.network == 'zfnet':
+        C.network = 'zfnet'
+        C.num_features = 256
+        from keras_frcnn import zfnet as nn
+    elif options.network == 'vgg':
+        C.network = 'vgg'
+        C.num_features = 512
+        from keras_frcnn import vgg as nn
+    else:
+        print('Not a valid model')
+        raise ValueError
+
+    return C, nn
 
 
 if __name__ == "__main__":
@@ -47,7 +63,7 @@ if __name__ == "__main__":
 
     parser.add_option("-n", "--num_rois", type="int", dest="num_rois", help="Number of RoIs to process at once.", default=32)
 
-    parser.add_option("--network", dest="network", help="Base network to use. Only support zfnet.", default='zfnet')
+    parser.add_option("--network", dest="network", help="Base network to use. Support simple, zfnet, vgg.", default='zfnet')
 
     parser.add_option("--hf", dest="horizontal_flips", help="Augment with horizontal flips in training. (Default=false).", action="store_true", default=False)
 
@@ -55,7 +71,9 @@ if __name__ == "__main__":
 
     parser.add_option("--rot", "--rot_90", dest="rot_90", help="Augment with 90 degree rotations in training. (Default=false).", action="store_true", default=False)
 
-    parser.add_option("--num_epochs", type="int", dest="num_epochs", help="Number of epochs.", default=10)
+    parser.add_option("--num_epochs", type="int", dest="num_epochs", help="Number of epochs.", default=5)
+
+    parser.add_option("--num_features", type="int", dest="num_features", help="length of feature map.", default=256)
 
     parser.add_option("--config_filename", dest="config_filename", help="Location to store all the metadata related to the training (to be used when testing).", default="config.pickle")
 
@@ -90,7 +108,7 @@ if __name__ == "__main__":
     C.num_rois = int(options.num_rois)
     # C.network = 'zfnet'
     '''
-    C = set_config(options)
+    C, nn = set_config(options)
 
     '''
     # based on network option, load different library as nn
@@ -118,6 +136,8 @@ if __name__ == "__main__":
 
     # read datafile into dicts
     all_imgs, classes_count, class_mapping = get_data(options.train_path)
+    print("DEBUGGING 121: all_img:", len(all_imgs))
+    print("DEBUGGING 122: img[0]: ", all_imgs[0])
 
     # add background class
     if 'bg' not in classes_count:
@@ -182,6 +202,7 @@ if __name__ == "__main__":
     model_classifier.compile(optimizer=optimizer_classifier, loss=[losses.class_loss_cls, losses.class_loss_regr(len(classes_count)-1)], metrics={'dense_class_{}'.format(len(classes_count)): 'accuracy'})
     model_all.compile(optimizer='sgd', loss='mae')
 
+    print("DEBUGGING 184: CHECK")
     # epoch_length = 600
     num_epochs = int(options.num_epochs)
     iter_num = 0
@@ -197,6 +218,8 @@ if __name__ == "__main__":
     for epoch_num in range(num_epochs):
         progbar = generic_utils.Progbar(C.epoch_length)
         print('Epoch {}/{}'.format(epoch_num + 1, num_epochs))
+        progbar.update(0)
+        counter = 0
 
         while True:
             try:
@@ -208,10 +231,14 @@ if __name__ == "__main__":
                     if mean_overlapping_bboxes == 0:
                         print('RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
 
+                print("DEBUGGING 212: CHECK")
                 X, Y, img_data = next(data_gen_train)
+                counter += 1
                 print("img {}: {}".format(str(counter), img_data['filepath']))
                 loss_rpn = model_rpn.train_on_batch(X, Y)
+                #print("train done")
                 P_rpn = model_rpn.predict_on_batch(X)   	# [x_class, x_regr]
+                #print("predict done")
                 # R = bboxes (300 ,4)
                 R = roi_helpers.rpn_to_roi(P_rpn[0], P_rpn[1], C, K.image_dim_ordering(), use_regr=True, overlap_thresh=0.7, max_boxes=300)
                 # note: calc_iou converts from (x1,y1,x2,y2) to (x,y,w,h) format

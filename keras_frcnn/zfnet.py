@@ -24,14 +24,25 @@ def get_weight_path():
 """
 
 
+def get_weight_path():
+    return ''
+
+
 def img_length_calc_function(C, width, height):
     def get_output_length(input_length):
+        #print("DEBUGGING 33: C.rpn_stride =", C.rpn_stride)
+        #return int(input_length/4)
         return input_length / C.rpn_stride
 
     return get_output_length(width), get_output_length(height)    
 
 
 def nn_base(input_tensor=None, trainable=False):
+    """
+    Based ConvNet shared by both RPN and ROI Pooling layer, implemented by a midified ZF Net,
+    and returns a feature map.
+    C.rpn_stride is set such that it corresponds to this base network
+    """
     """
     # Determine proper input shape
     if K.image_dim_ordering() == 'th':
@@ -118,6 +129,12 @@ def nn_base(input_tensor=None, trainable=False):
 
 
 def rpn(base_layers, num_anchors):
+    """
+    The RPN network that takes feature map as input and return region proposals with probability
+    of having an object (classification) and bbox (regression)
+
+    :param base_layers:  feature map from base ConvNet
+    """
     #x = Conv2D(512, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x = Conv2D(256, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x_class = Conv2D(num_anchors, (1, 1), activation='sigmoid', kernel_initializer='uniform', name='rpn_out_class')(x)
@@ -126,8 +143,16 @@ def rpn(base_layers, num_anchors):
     return [x_class, x_regr, base_layers]
 
 
+
 def classifier(base_layers, input_rois, num_rois, nb_classes=44, trainable=False):
-    '''
+    """
+    The classifier network that takes feature map as input and apply RoI pooling
+
+    :param base_layers: feature map from base ConvNet
+    :param input_rois: RoIs prposed by RPN
+    :param num_rois: number of RoIs at one time
+    """
+    """
     # compile times on theano tend to be very high, so we use smaller ROI pooling regions to workaround
     if K.backend() == 'tensorflow':
         pooling_regions = 7
@@ -135,9 +160,9 @@ def classifier(base_layers, input_rois, num_rois, nb_classes=44, trainable=False
     elif K.backend() == 'theano':
         pooling_regions = 7
         input_shape = (num_rois,512,7,7)
-    '''
+    """
     pooling_regions = 7
-    # input_shape = (num_rois, 7, 7, 512)
+    #input_shape = (num_rois, 7, 7, 512)
     out_roi_pool = RoiPoolingConv(pooling_regions, num_rois)([base_layers, input_rois])
 
     out = TimeDistributed(Flatten(name='flatten'))(out_roi_pool)
@@ -151,5 +176,4 @@ def classifier(base_layers, input_rois, num_rois, nb_classes=44, trainable=False
     out_regr = TimeDistributed(Dense(4 * (nb_classes-1), activation='linear', kernel_initializer='zero'), name='dense_regress_{}'.format(nb_classes))(out)
 
     return [out_class, out_regr]
-
 
