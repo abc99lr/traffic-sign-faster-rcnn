@@ -256,11 +256,15 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
 
             anchor_x = (anchor_size * anchor_ratio[0]) / C.rpn_stride
             anchor_y = (anchor_size * anchor_ratio[1]) / C.rpn_stride
+            '''
             if dim_ordering == 'th':
                 regr = regr_layer[0, 4 * curr_layer:4 * curr_layer + 4, :, :]
             else:
                 regr = regr_layer[0, :, :, 4 * curr_layer:4 * curr_layer + 4]
                 regr = np.transpose(regr, (2, 0, 1))
+            '''
+            regr = regr_layer[0, :, :, 4 * curr_layer:4 * curr_layer + 4]
+            regr = np.transpose(regr, (2, 0, 1))
 
             X, Y = np.meshgrid(np.arange(cols),np. arange(rows))
 

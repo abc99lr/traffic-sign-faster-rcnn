@@ -15,6 +15,8 @@ L({pi}, {ti}) = Loss_cls + Loss_reg = SUM(L_cls(pi, pi*)) / N_cls + lambda * SUM
 L_cls: log loss over two classes(obj / not obj)
 L_reg: robust loss (smooth L1 in this case), L_reg(ti, ti*) = R(ti − t*)
 pi: predicted probability of anchor i being an object
+pi_star: 1 for pos anchor and 0 for neg anchor
+N_cls/N_reg: number of anchors
 ground-truth label p*: 1 if the anchor i is positive, 0 if the anchor is negative
 ti: 4 parameterized coordinates of the predicted bounding box
 t*: 4 parameterized coordinates of the i ground-truth box associated with a positive anchor
