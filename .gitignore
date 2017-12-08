@@ -93,3 +93,6 @@ ENV/
 *.hdf5
 test.py
 copy.sh
+
+# results_imgs
+results_imgs
