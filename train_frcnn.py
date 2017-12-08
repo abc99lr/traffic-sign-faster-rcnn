@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     parser.add_option("-n", "--num_rois", type="int", dest="num_rois", help="Number of RoIs to process at once.", default=32)
 
-    parser.add_option("--network", dest="network", help="Base network to use. Support simple, zfnet, vgg.", default='simple')
+    parser.add_option("--network", dest="network", help="Base network to use. Support simple, zfnet, vgg.", default='zfnet')
 
     parser.add_option("--hf", dest="horizontal_flips", help="Augment with horizontal flips in training. (Default=false).", action="store_true", default=False)
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # parser.add_option("--num_features", type="int", dest="num_features", help="length of feature map.", default=256)
 
-    parser.add_option("--config_filename", dest="config_filename", help="Location to store all the metadata related to the training (to be used when testing).", default="simple_config.pickle")
+    parser.add_option("--config_filename", dest="config_filename", help="Location to store all the metadata related to the training (to be used when testing).", default="zfnet_config.pickle")
 
     parser.add_option("--output_weight_path", dest="output_weight_path", help="Output path for weights.", default='./model_frcnn_zfnet.hdf5')
 

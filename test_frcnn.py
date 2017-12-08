@@ -74,7 +74,7 @@ if __name__ == "__main__":
                     help="Number of ROIs per iteration. Higher means more memory use.", default=32)
     parser.add_option("--config_filename", dest="config_filename", help=
                     "Location to read the metadata related to the training (generated when training).",
-                    default="config.pickle")
+                    default="zfnet_config.pickle")
     parser.add_option("--network", dest="network", help="Base network to use. Supports vgg or resnet50.", default='zfnet')
 
     (options, args) = parser.parse_args()
