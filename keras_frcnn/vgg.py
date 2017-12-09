@@ -26,7 +26,9 @@ def get_weight_path():
         return
     else:
     '''
-    return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+    return ''
+    #return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+
 
 
 def img_length_calc_function(C, width, height):
@@ -34,7 +36,7 @@ def img_length_calc_function(C, width, height):
         #print("DEBUGGING 33: C.rpn_stride =", C.rpn_stride)
         #return int(input_length/4)
         return input_length / C.rpn_stride
-
+    return get_output_length(width), get_output_length(height)
 
 def nn_base(input_tensor=None, trainable=False):
     """
@@ -72,7 +74,7 @@ def nn_base(input_tensor=None, trainable=False):
         else:
             img_input = input_tensor
 
-    bn_axis = 1
+    bn_axis = 3
 
     # Block 1
     conv1 = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
