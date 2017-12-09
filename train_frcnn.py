@@ -47,6 +47,7 @@ def set_config(options):
     elif options.network == 'vgg':
         C.network = 'vgg'
         C.num_features = 512
+        C.rpn_stride = 1
         from keras_frcnn import vgg as nn
     else:
         print('Not a valid model')
