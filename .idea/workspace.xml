@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c1c785fb-ec4c-4fb0-ae06-7e8c98f3e5e6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/keras_frcnn/vgg.py" afterPath="$PROJECT_DIR$/keras_frcnn/vgg.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/run.sh" afterPath="$PROJECT_DIR$/run.sh" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -27,11 +26,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vgg.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="vgg.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/keras_frcnn/vgg.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="149" column="45" lean-forward="false" selection-start-line="149" selection-start-column="45" selection-end-line="149" selection-end-column="45" />
+            <state relative-caret-position="432">
+              <caret line="105" column="57" lean-forward="false" selection-start-line="105" selection-start-column="57" selection-end-line="105" selection-end-column="57" />
               <folding>
                 <element signature="e#170#207#0" expanded="true" />
               </folding>
@@ -87,7 +86,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="run.sh" pinned="false" current-in-tab="true">
+      <file leaf-file-name="run.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="120">
@@ -171,8 +170,8 @@
         <option value="$PROJECT_DIR$/keras_frcnn/roi_helpers.py" />
         <option value="$PROJECT_DIR$/copy.sh" />
         <option value="$PROJECT_DIR$/train_frcnn.py" />
-        <option value="$PROJECT_DIR$/keras_frcnn/vgg.py" />
         <option value="$PROJECT_DIR$/run.sh" />
+        <option value="$PROJECT_DIR$/keras_frcnn/vgg.py" />
       </list>
     </option>
   </component>
@@ -878,16 +877,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/keras_frcnn/vgg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="149" column="45" lean-forward="false" selection-start-line="149" selection-start-column="45" selection-end-line="149" selection-end-column="45" />
-          <folding>
-            <element signature="e#170#207#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/train_frcnn.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-775">
@@ -903,6 +892,16 @@
         <state relative-caret-position="120">
           <caret line="8" column="110" lean-forward="true" selection-start-line="8" selection-start-column="110" selection-end-line="8" selection-end-column="110" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/keras_frcnn/vgg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="105" column="57" lean-forward="false" selection-start-line="105" selection-start-column="57" selection-end-line="105" selection-end-column="57" />
+          <folding>
+            <element signature="e#170#207#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

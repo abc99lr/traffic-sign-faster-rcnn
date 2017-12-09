@@ -102,8 +102,8 @@ def nn_base(input_tensor=None, trainable=False):
     conv13 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(conv12)
     # x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
-    print("DEBUGGING: simple_net 45: x shape =", x.shape)
     x = conv13
+    print("DEBUGGING: simple_net 45: x shape =", x.shape)
     return x
 
 def rpn(base_layers, num_anchors):
