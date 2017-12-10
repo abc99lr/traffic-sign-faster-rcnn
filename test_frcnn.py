@@ -12,7 +12,7 @@ from keras.layers import Input
 from keras.models import Model
 from keras_frcnn import roi_helpers
 #import keras_frcnn.zfnet as nn
-#import keras_frcnn.simple_net as nn
+#import keras_frcnn.fcnet as nn
 
 sys.setrecursionlimit(40000)
 
@@ -87,8 +87,8 @@ if __name__ == "__main__":
     with open(config_output_filename, 'rb') as f_in:
         C = pickle.load(f_in)
 
-    if C.network == 'simple':
-        import keras_frcnn.simple_net as nn
+    if C.network == 'fcnet':
+        import keras_frcnn.fcnet as nn
     elif C.network == 'zfnet':
         import keras_frcnn.zfnet as nn
     elif C.network == 'vgg':
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
     model_classifier = Model([feature_map_input, roi_input], classifier)
 
-    print('Loading weights from {}'.format(C.model_path))       # model_path specified in simple_config.pickle
+    print('Loading weights from {}'.format(C.model_path))       # model_path specified in config file
     model_rpn.load_weights(C.model_path, by_name=True)
     model_classifier.load_weights(C.model_path, by_name=True)
 

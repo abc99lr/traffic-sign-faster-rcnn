@@ -18,7 +18,7 @@ from keras.utils import generic_utils
 
 from keras_frcnn.simple_parser import get_data
 #from keras_frcnn import zfnet as nn
-#from keras_frcnn import simple_net as nn
+#from keras_frcnn import fcnet as nn
 
 sys.setrecursionlimit(40000)
 
@@ -36,10 +36,10 @@ def set_config(options):
     C.num_rois = int(options.num_rois)
     C.epoch_length = options.epoch_length
     #C.num_features = options.num_features
-    if options.network == 'simple':
-        C.network = 'simple'
+    if options.network == 'fcnet':
+        C.network = 'fcnet'
         C.num_features = 64
-        from keras_frcnn import simple_net as nn
+        from keras_frcnn import fcnet as nn
     elif options.network == 'zfnet':
         C.network = 'zfnet'
         C.num_features = 256
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     parser.add_option("-n", "--num_rois", type="int", dest="num_rois", help="Number of RoIs to process at once.", default=32)
 
-    parser.add_option("--network", dest="network", help="Base network to use. Support simple, zfnet, vgg.", default='zfnet')
+    parser.add_option("--network", dest="network", help="Base network to use. Support fcnet, zfnet, vgg.", default='zfnet')
 
     parser.add_option("--hf", dest="horizontal_flips", help="Augment with horizontal flips in training. (Default=false).", action="store_true", default=False)
 

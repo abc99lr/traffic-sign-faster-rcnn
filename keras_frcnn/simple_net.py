@@ -44,7 +44,7 @@ def nn_base(input_tensor=None, trainable=False):
     x = MaxPooling2D(pool_size=(2, 2))(x)
     x = Conv2D(filters=64, kernel_size=(5, 5), padding="same", activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
-    print("DEBUGGING: simple_net 45: x shape =", x.shape)
+    print("DEBUGGING: fcnet 45: x shape =", x.shape)
     return x
 
 
