@@ -96,13 +96,14 @@ def nn_base(input_tensor=None, trainable=False):
     conv8 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(pool3)
     conv9 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(conv8)
     conv10 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(conv9)
-    pool4 = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(conv10)
+    #pool4 = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(conv10)   # comment for stride = 8
 
     # Block 5
-    conv11 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(pool4)
+    conv11 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(conv10)    # add for stride = 8
+    #conv11 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(pool4)
     conv12 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(conv11)
     conv13 = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(conv12)
-    # x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
+    # x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)   # comment for stride = 16
 
     x = conv13
     print("DEBUGGING: simple_net 45: x shape =", x.shape)
