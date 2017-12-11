@@ -26,8 +26,8 @@ def get_weight_path():
         return
     else:
     '''
-    return ''
-    #return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+    #return ''
+    return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 
 
 
