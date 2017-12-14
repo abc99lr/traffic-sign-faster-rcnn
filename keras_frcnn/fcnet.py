@@ -40,10 +40,12 @@ def nn_base(input_tensor=None, trainable=False):
         else:
             img_input = input_tensor
 
-    x = Conv2D(filters=32, kernel_size=(3, 3), padding="same", activation='relu')(img_input)
-    x = MaxPooling2D(pool_size=(2, 2))(x)
-    x = Conv2D(filters=64, kernel_size=(5, 5), padding="same", activation='relu')(x)
-    x = MaxPooling2D(pool_size=(2, 2))(x)
+    conv1 = Conv2D(filters=32, kernel_size=(3, 3), padding="same", activation='relu')(img_input)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+    conv2 = Conv2D(filters=64, kernel_size=(5, 5), padding="same", activation='relu')(pool1)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(pool2)
+    x = pool3
     print("DEBUGGING: fcnet 45: x shape =", x.shape)
     return x
 
