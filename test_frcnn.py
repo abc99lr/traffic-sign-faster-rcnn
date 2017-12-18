@@ -349,9 +349,13 @@ if __name__ == "__main__":
             T[key].extend(t[key])
             P[key].extend(p[key])
         all_aps = []
-        print("T:", T[key])
-        print("P:", P[key])
+        #print("T:", T[key])
+        #print("P:", P[key])
         for key in T.keys():
+            print("T:", T[key])
+            print("P:", P[key])
+            T[key] = 1 if T[key] > 0.5 or 0
+            P[key] = 1 if P[key] > 0.5 or 0
             print("T:", T[key])
             print("P:", P[key])
             ap = average_precision_score(T[key], P[key])
