@@ -122,9 +122,7 @@ def nn_base(input_tensor=None, trainable=False):
     """ Layer 5: deleted the pooling layer """
     conv5 = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu')(conv4)
     pool5 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same')(conv5)
-    #print("DEBUGGING 61: conv5 shape =", conv5.output_shape())
     x = pool5
-    print("DEBUGGING: simple_net 45: x shape =", x.shape)
     return x
 
 
@@ -135,7 +133,6 @@ def rpn(base_layers, num_anchors):
 
     :param base_layers:  feature map from base ConvNet
     """
-    #x = Conv2D(512, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x = Conv2D(256, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x_class = Conv2D(num_anchors, (1, 1), activation='sigmoid', kernel_initializer='uniform', name='rpn_out_class')(x)
     x_regr = Conv2D(num_anchors * 4, (1, 1), activation='linear', kernel_initializer='zero', name='rpn_out_regress')(x)
@@ -152,17 +149,7 @@ def classifier(base_layers, input_rois, num_rois, nb_classes=44, trainable=False
     :param input_rois: RoIs prposed by RPN
     :param num_rois: number of RoIs at one time
     """
-    """
-    # compile times on theano tend to be very high, so we use smaller ROI pooling regions to workaround
-    if K.backend() == 'tensorflow':
-        pooling_regions = 7
-        input_shape = (num_rois,7,7,512)
-    elif K.backend() == 'theano':
-        pooling_regions = 7
-        input_shape = (num_rois,512,7,7)
-    """
     pooling_regions = 7
-    #input_shape = (num_rois, 7, 7, 512)
     out_roi_pool = RoiPoolingConv(pooling_regions, num_rois)([base_layers, input_rois])
 
     out = TimeDistributed(Flatten(name='flatten'))(out_roi_pool)

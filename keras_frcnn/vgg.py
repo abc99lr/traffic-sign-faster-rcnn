@@ -1,14 +1,8 @@
-# -*- coding: utf-8 -*-
-"""VGG16 model for Keras.
-# Reference
-- [Very Deep Convolutional Networks for Large-Scale Image Recognition](https://arxiv.org/abs/1409.1556)
-"""
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 
 import warnings
-
 from keras.models import Model
 from keras.layers import Flatten, Dense, Input, Conv2D, MaxPooling2D, Dropout
 from keras.layers import GlobalAveragePooling2D, GlobalMaxPooling2D, TimeDistributed
@@ -26,9 +20,7 @@ def get_weight_path():
         return
     else:
     '''
-    #return ''
     return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
-
 
 
 def img_length_calc_function(C, width, height):
@@ -38,33 +30,13 @@ def img_length_calc_function(C, width, height):
         return input_length / C.rpn_stride
     return get_output_length(width), get_output_length(height)
 
+
 def nn_base(input_tensor=None, trainable=False):
     """
     Based ConvNet shared by both RPN and ROI Pooling layer, implemented by a midified VGG-16,
     and returns a feature map.
     C.rpn_stride is set such that it corresponds to this base network
     """
-
-    # Determine proper input shape
-    '''
-    if K.image_dim_ordering() == 'th':
-        input_shape = (3, None, None)
-    else:
-        input_shape = (None, None, 3)
-
-    if input_tensor is None:
-        img_input = Input(shape=input_shape)
-    else:
-        if not K.is_keras_tensor(input_tensor):
-            img_input = Input(tensor=input_tensor, shape=input_shape)
-        else:
-            img_input = input_tensor
-
-    if K.image_dim_ordering() == 'tf':
-        bn_axis = 3
-    else:
-        bn_axis = 1
-    '''
 
     if input_tensor is None:
         img_input = Input(shape=(None, None, 3))
@@ -105,7 +77,6 @@ def nn_base(input_tensor=None, trainable=False):
     # x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
     x = conv13
-    print("DEBUGGING: simple_net 45: x shape =", x.shape)
     return x
 
 def rpn(base_layers, num_anchors):
@@ -130,15 +101,6 @@ def classifier(base_layers, input_rois, num_rois, nb_classes = 21, trainable=Fal
     :param input_rois: RoIs prposed by RPN
     :param num_rois: number of RoIs at one time
     """
-    # compile times on theano tend to be very high, so we use smaller ROI pooling regions to workaround
-    '''
-    if K.backend() == 'tensorflow':
-        pooling_regions = 7
-        input_shape = (num_rois,7,7,512)
-    elif K.backend() == 'theano':
-        pooling_regions = 7
-        input_shape = (num_rois,512,7,7)
-    '''
     pooling_regions = 7
     out_roi_pool = RoiPoolingConv(pooling_regions, num_rois)([base_layers, input_rois])
 

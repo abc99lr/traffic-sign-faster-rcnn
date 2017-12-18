@@ -24,8 +24,6 @@ def get_weight_path():
 
 def img_length_calc_function(C, width, height):
     def get_output_length(input_length):
-        #print("DEBUGGING 33: C.rpn_stride =", C.rpn_stride)
-        #return int(input_length/4)
         return input_length / C.rpn_stride
 
     return get_output_length(width), get_output_length(height)
@@ -46,7 +44,6 @@ def nn_base(input_tensor=None, trainable=False):
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
     #pool3 = MaxPooling2D(pool_size=(2, 2))(pool2)
     x = pool2
-    print("DEBUGGING: fcnet 45: x shape =", x.shape)
     return x
 
 
@@ -57,11 +54,9 @@ def rpn(base_layers, num_anchors):
 
     :param base_layers:  feature map from base ConvNet
     """
-    #x = Conv2D(512, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x = Conv2D(256, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
     x_class = Conv2D(num_anchors, (1, 1), activation='sigmoid', kernel_initializer='uniform', name='rpn_out_class')(x)
     x_regr = Conv2D(num_anchors * 4, (1, 1), activation='linear', kernel_initializer='zero', name='rpn_out_regress')(x)
-
     return [x_class, x_regr, base_layers]
 
 
@@ -73,22 +68,12 @@ def classifier(base_layers, input_rois, num_rois, nb_classes=44, trainable=False
     :param input_rois: RoIs prposed by RPN
     :param num_rois: number of RoIs at one time
     """
-    """
-    # compile times on theano tend to be very high, so we use smaller ROI pooling regions to workaround
-    if K.backend() == 'tensorflow':
-        pooling_regions = 7
-        input_shape = (num_rois,7,7,512)
-    elif K.backend() == 'theano':
-        pooling_regions = 7
-        input_shape = (num_rois,512,7,7)
-    """
     pooling_regions = 7
-    #input_shape = (num_rois, 7, 7, 512)
     out_roi_pool = RoiPoolingConv(pooling_regions, num_rois)([base_layers, input_rois])
 
     out = TimeDistributed(Flatten(name='flatten'))(out_roi_pool)
     out = TimeDistributed(Dense(4096, activation='relu', name='fc1'))(out)
-    #out = TimeDistributed(Dropout(0.5))(out)           ######## modify to try dropout
+    #out = TimeDistributed(Dropout(0.5))(out)
     out = TimeDistributed(Dense(4096, activation='relu', name='fc2'))(out)
     #out = TimeDistributed(Dropout(0.5))(out)
 
