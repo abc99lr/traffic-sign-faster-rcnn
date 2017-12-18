@@ -15,10 +15,7 @@ from keras_frcnn import config, data_generators
 from keras_frcnn import losses as losses
 import keras_frcnn.roi_helpers as roi_helpers
 from keras.utils import generic_utils
-
 from keras_frcnn.simple_parser import get_data
-#from keras_frcnn import zfnet as nn
-#from keras_frcnn import fcnet as nn
 
 sys.setrecursionlimit(40000)
 

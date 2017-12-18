@@ -14,16 +14,6 @@ from keras import backend as K
 from keras_frcnn.RoiPoolingConv import RoiPoolingConv
 
 
-"""
-def get_weight_path():
-    if K.image_dim_ordering() == 'th':
-        print('pretrained weights not available for VGG with theano backend')
-        return
-    else:
-        return 'vgg16_weights_tf_dim_ordering_tf_kernels.h5'
-"""
-
-
 def get_weight_path():
     return ''
 
@@ -105,13 +95,10 @@ def nn_base(input_tensor=None, trainable=False):
     """ Layer 1: modified stides to 1  """
     conv1 = Conv2D(filters=96, kernel_size=(7, 7), strides=(1, 1),  padding='same', activation='relu')(img_input)
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    #conv1 = Conv2D(filters=96, kernel_size=(7, 7), strides=(2, 2), padding='same', activation='relu')(img_input)
-    #pool1 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(conv1)
 
     """ Layer 2: modified stides to 1 """
     conv2 = Conv2D(filters=256, kernel_size=(5, 5), strides=(1, 1),  padding='same', activation='relu')(pool1)
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    #pool2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(conv2)
 
     """ Layer 3 """
     conv3 = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu')(pool2)
@@ -121,7 +108,7 @@ def nn_base(input_tensor=None, trainable=False):
 
     """ Layer 5: deleted the pooling layer """
     conv5 = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu')(conv4)
-    pool5 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same')(conv5)
+    pool5 = MaxPooling2D(pool_size=(2, 2))(conv5)
     x = pool5
     return x
 
@@ -154,7 +141,7 @@ def classifier(base_layers, input_rois, num_rois, nb_classes=44, trainable=False
 
     out = TimeDistributed(Flatten(name='flatten'))(out_roi_pool)
     out = TimeDistributed(Dense(4096, activation='relu', name='fc1'))(out)
-    #out = TimeDistributed(Dropout(0.5))(out)           ######## modify to try dropout
+    #out = TimeDistributed(Dropout(0.5))(out)
     out = TimeDistributed(Dense(4096, activation='relu', name='fc2'))(out)
     #out = TimeDistributed(Dropout(0.5))(out)
 

@@ -13,8 +13,6 @@ from keras.models import Model
 from keras_frcnn import roi_helpers
 from keras_frcnn import data_generators
 from keras_frcnn.simple_parser import get_data
-#import keras_frcnn.zfnet as nn
-#import keras_frcnn.fcnet as nn
 from sklearn.metrics import average_precision_score
 
 
