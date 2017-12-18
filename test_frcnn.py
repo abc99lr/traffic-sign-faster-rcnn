@@ -350,6 +350,8 @@ if __name__ == "__main__":
             P[key].extend(p[key])
         all_aps = []
         for key in T.keys():
+            print("T:", T[key])
+            print("P:", P[key])
             ap = average_precision_score(T[key], P[key])
             #print('{} AP: {}'.format(key, ap))
             if ap != float('nan'):
