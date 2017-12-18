@@ -350,7 +350,7 @@ if __name__ == "__main__":
         all_aps = []
         for key in T.keys():
             ap = average_precision_score(T[key], P[key])
-            print('{} AP: {}'.format(key, ap))
+            #print('{} AP: {}'.format(key, ap))
             all_aps.append(ap)
         print('mAP = {}'.format(np.mean(np.array(all_aps))))
         # print(T)
