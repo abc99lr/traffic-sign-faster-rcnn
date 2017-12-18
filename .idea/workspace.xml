@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c1c785fb-ec4c-4fb0-ae06-7e8c98f3e5e6" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/zfnet_config.pickle" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/keras_frcnn/config.py" afterPath="$PROJECT_DIR$/keras_frcnn/config.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/run.sh" afterPath="$PROJECT_DIR$/run.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/train_frcnn.py" afterPath="$PROJECT_DIR$/train_frcnn.py" />
-    </list>
+    <list default="true" id="c1c785fb-ec4c-4fb0-ae06-7e8c98f3e5e6" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
