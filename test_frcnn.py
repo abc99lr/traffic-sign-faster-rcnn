@@ -354,8 +354,8 @@ if __name__ == "__main__":
         for key in T.keys():
             print("T:", T[key])
             print("P:", P[key])
-            T[key] = 1 if T[key] > 0.5 or 0
-            P[key] = 1 if P[key] > 0.5 or 0
+            T[key] = 1 if T[key] > 0.5 else 0
+            P[key] = 1 if P[key] > 0.5 else 0
             print("T:", T[key])
             print("P:", P[key])
             ap = average_precision_score(T[key], P[key])
