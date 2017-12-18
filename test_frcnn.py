@@ -349,6 +349,8 @@ if __name__ == "__main__":
             T[key].extend(t[key])
             P[key].extend(p[key])
         all_aps = []
+        print("T:", T[key])
+        print("P:", P[key])
         for key in T.keys():
             print("T:", T[key])
             print("P:", P[key])
