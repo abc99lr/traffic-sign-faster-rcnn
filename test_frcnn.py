@@ -357,6 +357,8 @@ if __name__ == "__main__":
                 P[key][i] = 1 if P[key][i] > 0.5 else 0
             print("T:", T[key])
             print("P:", P[key])
+            if T[key].count(0) == len(T[key]) and P[key].count(0) == len(P[key]):
+                continue
             ap = average_precision_score(T[key], P[key])
             print('{} AP: {}'.format(key, ap))
             if ap != float('nan'):
