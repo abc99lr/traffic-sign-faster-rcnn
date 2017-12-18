@@ -14,7 +14,7 @@ from keras_frcnn import roi_helpers
 from keras_frcnn import data_generators
 from sklearn.metrics import average_precision_score
 
-'''
+
 def get_map(pred, gt, f):
     T = {}
     P = {}
@@ -282,5 +282,3 @@ for idx, img_data in enumerate(test_imgs):
     print('mAP = {}'.format(np.mean(np.array(all_aps))))
     #print(T)
     #print(P)
-
-'''

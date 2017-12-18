@@ -11,8 +11,12 @@ from keras import backend as K
 from keras.layers import Input
 from keras.models import Model
 from keras_frcnn import roi_helpers
+from keras_frcnn import data_generators
+from keras_frcnn.simple_parser import get_data
 #import keras_frcnn.zfnet as nn
 #import keras_frcnn.fcnet as nn
+from sklearn.metrics import average_precision_score
+
 
 sys.setrecursionlimit(40000)
 
@@ -32,7 +36,9 @@ def format_img_size(img, C):
         new_width = int(ratio * width)
         new_height = int(img_min_side)
     img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
-    return img, ratio
+    fx = width / float(new_width)
+    fy = height / float(new_height)
+    return img, ratio, fx, fy
 
 
 def format_img_channels(img, C):
@@ -50,9 +56,9 @@ def format_img_channels(img, C):
 
 def format_img(img, C):
     """ formats an image for model prediction based on config """
-    img, ratio = format_img_size(img, C)
+    img, ratio, fx, fy = format_img_size(img, C)
     img = format_img_channels(img, C)
-    return img, ratio
+    return img, ratio, fx, fy
 
 
 def get_real_coordinates(ratio, x1, y1, x2, y2):
@@ -63,6 +69,67 @@ def get_real_coordinates(ratio, x1, y1, x2, y2):
     real_y2 = int(round(y2 // ratio))
 
     return (real_x1, real_y1, real_x2 ,real_y2)
+
+
+def get_map(pred, gt, f):
+    T = {}
+    P = {}
+    fx, fy = f
+
+    for bbox in gt:
+        bbox['bbox_matched'] = False
+
+    pred_probs = np.array([s['prob'] for s in pred])
+    box_idx_sorted_by_prob = np.argsort(pred_probs)[::-1]
+
+    for box_idx in box_idx_sorted_by_prob:
+        pred_box = pred[box_idx]
+        pred_class = pred_box['class']
+        pred_x1 = pred_box['x1']
+        pred_x2 = pred_box['x2']
+        pred_y1 = pred_box['y1']
+        pred_y2 = pred_box['y2']
+        pred_prob = pred_box['prob']
+        if pred_class not in P:
+            P[pred_class] = []
+            T[pred_class] = []
+        P[pred_class].append(pred_prob)
+        found_match = False
+
+        for gt_box in gt:
+            gt_class = gt_box['class']
+            gt_x1 = gt_box['x1']/fx
+            gt_x2 = gt_box['x2']/fx
+            gt_y1 = gt_box['y1']/fy
+            gt_y2 = gt_box['y2']/fy
+            gt_seen = gt_box['bbox_matched']
+            if gt_class != pred_class:
+                continue
+            if gt_seen:
+                continue
+            iou = data_generators.iou((pred_x1, pred_y1, pred_x2, pred_y2), (gt_x1, gt_y1, gt_x2, gt_y2))
+            if iou >= 0.5:
+                found_match = True
+                gt_box['bbox_matched'] = True
+                break
+            else:
+                continue
+
+        T[pred_class].append(int(found_match))
+
+    for gt_box in gt:
+        #if not gt_box['bbox_matched'] and not gt_box['difficult']:
+        if not gt_box['bbox_matched']:
+            if gt_box['class'] not in P:
+                P[gt_box['class']] = []
+                T[gt_box['class']] = []
+
+            T[gt_box['class']].append(1)
+            P[gt_box['class']].append(0)
+
+    #import pdb
+    #pdb.set_trace()
+    return T, P
 
 
 
@@ -148,23 +215,34 @@ if __name__ == "__main__":
     model_rpn.compile(optimizer='sgd', loss='mse')
     model_classifier.compile(optimizer='sgd', loss='mse')
 
-    all_imgs = []
+    #all_imgs = []
     classes = {}
+    all_imgs, _, _ = get_data(options.test_path)
+    test_imgs = [s for s in all_imgs if s['imageset'] == 'train']
+    print("DEBUGGING 218: test imgs: ", len(test_imgs))
     classification_threshold = 0.8		# threshold above which we classify as positive
     # visualise = True
 
+    # for mAP
+    T, P = {}, {}
+
     counter = 0
-    for idx, img_name in enumerate(sorted(os.listdir(img_path))):
-        if not img_name.lower().endswith(('.bmp', '.jpeg', '.jpg', '.png', '.tif', '.tiff')):
-            continue
+    #for idx, img_name in enumerate(sorted(os.listdir(img_path))):
+    #    if not img_name.lower().endswith(('.bmp', '.jpeg', '.jpg', '.png', '.tif', '.tiff')):
+    #        continue
+    for idx, img_data in enumerate(test_imgs):
+        print('{}/{}'.format(idx, len(test_imgs)))
+        img_name = img_data['filepath'].split('/')[-1]
+        print("DEBUGGING 232 img_name:", img_name)
         print("img {}: {}".format(str(counter), img_name))
         counter += 1
         start_time = time.time()
+        img_path = '../faster-rcnn/dataset/PNG_train/'
         filepath = os.path.join(img_path, img_name)
-
+        print("DEBUGGING filepath:", filepath)
         img = cv2.imread(filepath)
 
-        X, ratio = format_img(img, C)
+        X, ratio, fx, fy = format_img(img, C)
         '''
         if K.image_dim_ordering() == 'tf':
             X = np.transpose(X, (0, 2, 3, 1))
@@ -246,8 +324,9 @@ if __name__ == "__main__":
 
                 cv2.rectangle(img,(real_x1, real_y1), (real_x2, real_y2), (int(class_to_color[key][0]), int(class_to_color[key][1]), int(class_to_color[key][2])),2)
 
-                textLabel = '{}: {}'.format(key,int(100*new_probs[jk]))
-                pred_bboxs.append((key,100*new_probs[jk]))
+                textLabel = '{}: {}'.format(key, int(100*new_probs[jk]))
+                #pred_bboxs.append((key, 100*new_probs[jk]))
+                pred_bboxs.append({'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'class': key, 'prob': new_probs[jk]})
 
                 (retval,baseLine) = cv2.getTextSize(textLabel,cv2.FONT_HERSHEY_COMPLEX,1,1)
                 textOrg = (real_x1, real_y1-0)
@@ -261,3 +340,20 @@ if __name__ == "__main__":
         # cv2.imshow('img', img)
         # cv2.waitKey(0)
         cv2.imwrite('./results_imgs/{}'.format(img_name), img)  ####### modify idx to img_name
+
+        # Calculate mAP
+        t, p = get_map(pred_bboxs, img_data['bboxes'], (fx, fy))
+        for key in t.keys():
+            if key not in T:
+                T[key] = []
+                P[key] = []
+            T[key].extend(t[key])
+            P[key].extend(p[key])
+        all_aps = []
+        for key in T.keys():
+            ap = average_precision_score(T[key], P[key])
+            print('{} AP: {}'.format(key, ap))
+            all_aps.append(ap)
+        print('mAP = {}'.format(np.mean(np.array(all_aps))))
+        # print(T)
+        # print(P)

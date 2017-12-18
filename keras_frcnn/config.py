@@ -34,7 +34,7 @@ class Config:
         self.num_rois = 32	 # defaulted to 32 in train and test
 
         # stride at the RPN (this depends on the network configuration)
-        self.rpn_stride = 4
+        self.rpn_stride = 8
 
         # length feature map (output of base ConvNet)
         self.num_features = 256
