@@ -335,6 +335,7 @@ if __name__ == "__main__":
 
         print('Elapsed time = {}'.format(time.time() - start_time))
         print("pred_bboxs:", pred_bboxs)
+        print("gt boxes:", img_data['bboxes'])
         # cv2.imshow('img', img)
         # cv2.waitKey(0)
         cv2.imwrite('./results_imgs/{}'.format(img_name), img)  ####### modify idx to img_name

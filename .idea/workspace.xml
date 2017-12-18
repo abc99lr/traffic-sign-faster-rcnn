@@ -42,8 +42,8 @@
       <file leaf-file-name="test_frcnn.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test_frcnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="354">
-              <caret line="347" column="33" lean-forward="true" selection-start-line="347" selection-start-column="33" selection-end-line="347" selection-end-column="33" />
+            <state relative-caret-position="267">
+              <caret line="342" column="23" lean-forward="true" selection-start-line="342" selection-start-column="23" selection-end-line="342" selection-end-column="23" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -918,8 +918,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test_frcnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="354">
-          <caret line="347" column="33" lean-forward="true" selection-start-line="347" selection-start-column="33" selection-end-line="347" selection-end-column="33" />
+        <state relative-caret-position="267">
+          <caret line="342" column="23" lean-forward="true" selection-start-line="342" selection-start-column="23" selection-end-line="342" selection-end-column="23" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
