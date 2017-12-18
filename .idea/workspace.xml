@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1c785fb-ec4c-4fb0-ae06-7e8c98f3e5e6" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/zfnet_8_config.pickle" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vgg_8_config.pickle" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/keras_frcnn/config.py" afterPath="$PROJECT_DIR$/keras_frcnn/config.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/keras_frcnn/vgg.py" afterPath="$PROJECT_DIR$/keras_frcnn/vgg.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/run.sh" afterPath="$PROJECT_DIR$/run.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/train_frcnn.py" afterPath="$PROJECT_DIR$/train_frcnn.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,7 +25,7 @@
               <caret line="21" column="0" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
-                <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+                <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
               </folding>
             </state>
           </provider>
@@ -507,7 +509,7 @@
           <caret line="32" column="32" lean-forward="true" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+            <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
           </folding>
         </state>
       </provider>
@@ -553,7 +555,7 @@
           <caret line="36" column="27" lean-forward="false" selection-start-line="36" selection-start-column="27" selection-end-line="36" selection-end-column="27" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+            <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
           </folding>
         </state>
       </provider>
@@ -578,7 +580,7 @@
           <caret line="20" column="38" lean-forward="false" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+            <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
           </folding>
         </state>
       </provider>
@@ -657,7 +659,7 @@
           <caret line="20" column="38" lean-forward="false" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+            <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
           </folding>
         </state>
       </provider>
@@ -695,7 +697,7 @@
           <caret line="20" column="38" lean-forward="false" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+            <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
           </folding>
         </state>
       </provider>
@@ -868,7 +870,7 @@
           <caret line="21" column="0" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <marker date="1513078966693" expanded="true" signature="1531:1893" ph="..." />
+            <marker date="1513041945620" expanded="true" signature="1531:1893" ph="..." />
           </folding>
         </state>
       </provider>

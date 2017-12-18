@@ -43,12 +43,11 @@ def set_config(options):
     elif options.network == 'zfnet':
         C.network = 'zfnet'
         C.num_features = 256
-        C.rpn_stride = 8
         from keras_frcnn import zfnet as nn
     elif options.network == 'vgg':
         C.network = 'vgg'
         C.num_features = 512
-        C.rpn_stride = 8
+        C.rpn_stride = 16
         from keras_frcnn import vgg as nn
     else:
         print('Not a valid model')
