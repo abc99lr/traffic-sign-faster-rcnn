@@ -72,7 +72,7 @@ def calc_iou(R, img_data, C, class_mapping):
 
         class_num = class_mapping[cls_name]
         class_label = len(class_mapping) * [0]      	# [0, 0, ... 0]
-        class_label[class_num] = 1				# form one-hot label
+        class_label[class_num] = 1				        # form one-hot label
         y_class_num.append(copy.deepcopy(class_label))
         coords = [0] * 4 * (len(class_mapping) - 1)
         labels = [0] * 4 * (len(class_mapping) - 1)
@@ -233,22 +233,11 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
     anchor_ratios = C.anchor_box_ratios
 
     assert rpn_layer.shape[0] == 1
-    '''
-    if dim_ordering == 'th':
-        (rows,cols) = rpn_layer.shape[2:]
 
-    elif dim_ordering == 'tf':
-        (rows, cols) = rpn_layer.shape[1:3]
-    '''
     (rows, cols) = rpn_layer.shape[1:3]
 
     curr_layer = 0
-    '''
-    if dim_ordering == 'tf':
-        A = np.zeros((4, rpn_layer.shape[1], rpn_layer.shape[2], rpn_layer.shape[3]))
-    elif dim_ordering == 'th':
-        A = np.zeros((4, rpn_layer.shape[2], rpn_layer.shape[3], rpn_layer.shape[1]))
-    '''
+
     A = np.zeros((4, rpn_layer.shape[1], rpn_layer.shape[2], rpn_layer.shape[3]))
 
     for anchor_size in anchor_sizes:
@@ -256,13 +245,7 @@ def rpn_to_roi(rpn_layer, regr_layer, C, dim_ordering, use_regr=True, max_boxes=
 
             anchor_x = (anchor_size * anchor_ratio[0]) / C.rpn_stride
             anchor_y = (anchor_size * anchor_ratio[1]) / C.rpn_stride
-            '''
-            if dim_ordering == 'th':
-                regr = regr_layer[0, 4 * curr_layer:4 * curr_layer + 4, :, :]
-            else:
-                regr = regr_layer[0, :, :, 4 * curr_layer:4 * curr_layer + 4]
-                regr = np.transpose(regr, (2, 0, 1))
-            '''
+
             regr = regr_layer[0, :, :, 4 * curr_layer:4 * curr_layer + 4]
             regr = np.transpose(regr, (2, 0, 1))
 

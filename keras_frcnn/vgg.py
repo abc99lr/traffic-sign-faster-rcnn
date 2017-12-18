@@ -25,8 +25,6 @@ def get_weight_path():
 
 def img_length_calc_function(C, width, height):
     def get_output_length(input_length):
-        #print("DEBUGGING 33: C.rpn_stride =", C.rpn_stride)
-        #return int(input_length/4)
         return input_length / C.rpn_stride
     return get_output_length(width), get_output_length(height)
 

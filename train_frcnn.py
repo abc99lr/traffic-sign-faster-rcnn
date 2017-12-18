@@ -8,7 +8,7 @@ from optparse import OptionParser
 import pickle
 
 from keras import backend as K
-from keras.optimizers import Adam, SGD, RMSprop
+from keras.optimizers import Adam
 from keras.layers import Input
 from keras.models import Model
 from keras_frcnn import config, data_generators
@@ -32,7 +32,6 @@ def set_config(options):
     C.model_path = options.output_weight_path
     C.num_rois = int(options.num_rois)
     C.epoch_length = options.epoch_length
-    #C.num_features = options.num_features
     if options.network == 'fcnet':
         C.network = 'fcnet'
         C.num_features = 64
@@ -76,8 +75,6 @@ if __name__ == "__main__":
 
     parser.add_option("--epoch_length", type="int", dest="epoch_length", help="Number of training images per epoch.", default=600)
 
-    # parser.add_option("--num_features", type="int", dest="num_features", help="length of feature map.", default=256)
-
     parser.add_option("--config_filename", dest="config_filename", help="Location to store all the metadata related to the training (to be used when testing).", default="zfnet_config.pickle")
 
     parser.add_option("--output_weight_path", dest="output_weight_path", help="Output path for weights.", default='./model_frcnn_zfnet.hdf5')
@@ -88,46 +85,9 @@ if __name__ == "__main__":
 
     if not options.train_path:   # if filename is not given
         parser.error('Error: path to training data must be specified. Pass --path to command line')
-    '''
-    if options.parser == 'pascal_voc':
-        from keras_frcnn.pascal_voc_parser import get_data
-    elif options.parser == 'simple':
-        from keras_frcnn.simple_parser import get_data
-    elif options.parser == 'gtsdb':
-        from keras_frcnn.gtsdb_parser import get_data
-    else:
-        raise ValueError("Command line option parser must be one of 'pascal_voc' or 'simple'")
-    '''
-    '''
-    # pass the settings from the command line, and persist them in the config object
-    C = config.Config()
 
-    # image augment options
-    C.use_horizontal_flips = bool(options.horizontal_flips)
-    C.use_vertical_flips = bool(options.vertical_flips)
-    C.rot_90 = bool(options.rot_90)
-
-    C.model_path = options.output_weight_path
-    C.num_rois = int(options.num_rois)
-    # C.network = 'zfnet'
-    '''
     C, nn = set_config(options)
 
-    '''
-    # based on network option, load different library as nn
-    if options.network == 'vgg':
-        C.network = 'vgg'
-        from keras_frcnn import vgg as nn
-    elif options.network == 'resnet50':
-        C.network = 'resnet50'
-        from keras_frcnn import resnet as nn
-    elif options.network == 'gtsdb':
-        C.network = 'gtsdb'
-        from keras_frcnn import gtsdb as nn
-    else:
-        print('Not a valid model')
-        raise ValueError
-    '''
     num_anchors = len(C.anchor_box_scales) * len(C.anchor_box_ratios)
 
     # check if weight path was passed via command line
@@ -139,8 +99,6 @@ if __name__ == "__main__":
 
     # read datafile into dicts
     all_imgs, classes_count, class_mapping = get_data(options.train_path)
-    print("DEBUGGING 121: all_img:", len(all_imgs))
-    print("DEBUGGING 122: img[0]: ", all_imgs[0])
 
     # add background class
     if 'bg' not in classes_count:
@@ -169,12 +127,6 @@ if __name__ == "__main__":
     data_gen_train = data_generators.get_anchor_gt(train_imgs, classes_count, C, nn.img_length_calc_function, K.image_dim_ordering(), mode='train')
     # data_gen_val = data_generators.get_anchor_gt(val_imgs, classes_count, C, nn.img_length_calc_function,K.image_dim_ordering(), mode='val')
 
-    '''
-    if K.image_dim_ordering() == 'th':
-        input_shape_img = (3, None, None)
-    else:
-        input_shape_img = (None, None, 3)
-    '''
     input_shape_img = (None, None, 3)
     img_input = Input(shape=input_shape_img)
     roi_input = Input(shape=(None, 4))
@@ -205,7 +157,6 @@ if __name__ == "__main__":
     model_classifier.compile(optimizer=optimizer_classifier, loss=[losses.class_loss_cls, losses.class_loss_regr(len(classes_count)-1)], metrics={'dense_class_{}'.format(len(classes_count)): 'accuracy'})
     model_all.compile(optimizer='sgd', loss='mae')
 
-    print("DEBUGGING 184: CHECK")
     # epoch_length = 600
     num_epochs = int(options.num_epochs)
     iter_num = 0
@@ -236,7 +187,6 @@ if __name__ == "__main__":
                     if mean_overlapping_bboxes == 0:
                         print('RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
 
-                print("DEBUGGING 212: CHECK")
                 X, Y, img_data = next(data_gen_train)
                 counter += 1
                 print("img {}: {}".format(str(counter), img_data['filepath']))
@@ -272,7 +222,6 @@ if __name__ == "__main__":
 
                 rpn_accuracy_rpn_monitor.append(len(pos_samples))
                 rpn_accuracy_for_epoch.append((len(pos_samples)))
-                print("DEBUGGING: 216: CHECK")
 
                 if C.num_rois > 1:
                     if len(pos_samples) < C.num_rois//2:		# get floor
@@ -295,7 +244,6 @@ if __name__ == "__main__":
                     else:
                         sel_samples = random.choice(pos_samples)
 
-                print("DEBUGGING: 236: CHECK")
                 loss_class = model_classifier.train_on_batch([X, pred_ROIs[:, sel_samples, :]], [pred_cls[:, sel_samples, :], pred_regr[:, sel_samples, :]])
 
                 losses[iter_num, 0] = loss_rpn[1]  # RPN classifier loss

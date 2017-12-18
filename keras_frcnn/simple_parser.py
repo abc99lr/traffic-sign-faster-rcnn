@@ -9,8 +9,6 @@ def get_data(input_path):
     classes_count = {}
     class_mapping = {}
 
-    # visualise = True
-
     with open(input_path, 'r') as f:
         print('Parsing annotation files')
 
@@ -32,7 +30,6 @@ def get_data(input_path):
             if filename not in all_imgs:
                 all_imgs[filename] = {}
 
-                # file_path = os.path.dirname(input_path) + '/' + filename
                 file_path = '../faster-rcnn/dataset/PNG_train/' + filename
                 img = cv2.imread(file_path)
                 (rows, cols) = img.shape[:2]
@@ -43,13 +40,6 @@ def get_data(input_path):
 
                 # we use all images as training images
                 all_imgs[filename]['imageset'] = 'train'     # modify to split train img for testing
-
-                '''
-                if np.random.randint(0,6) > 0:
-                    all_imgs[filename]['imageset'] = 'trainval'
-                else:
-                    all_imgs[filename]['imageset'] = 'test'
-                '''
 
             all_imgs[filename]['bboxes'].append({'class': class_name, 'x1': int(x1), 'x2': int(x2), 'y1': int(y1), 'y2': int(y2)})
 
