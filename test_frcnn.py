@@ -126,11 +126,9 @@ def get_map(pred, gt, f):
 
             T[gt_box['class']].append(1)
             P[gt_box['class']].append(0)
-
     #import pdb
     #pdb.set_trace()
     return T, P
-
 
 
 if __name__ == "__main__":
