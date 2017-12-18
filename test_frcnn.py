@@ -20,8 +20,6 @@ from sklearn.metrics import average_precision_score
 
 sys.setrecursionlimit(40000)
 
-#NUM_FEATURES = 256
-
 def format_img_size(img, C):
     """ formats the image size based on config """
     img_min_side = float(C.im_size)
@@ -118,7 +116,6 @@ def get_map(pred, gt, f):
         T[pred_class].append(int(found_match))
 
     for gt_box in gt:
-        #if not gt_box['bbox_matched'] and not gt_box['difficult']:
         if not gt_box['bbox_matched']:
             if gt_box['class'] not in P:
                 P[gt_box['class']] = []
@@ -126,8 +123,6 @@ def get_map(pred, gt, f):
 
             T[gt_box['class']].append(1)
             P[gt_box['class']].append(0)
-    #import pdb
-    #pdb.set_trace()
     return T, P
 
 
@@ -173,18 +168,6 @@ if __name__ == "__main__":
     print(class_mapping)
     class_to_color = {class_mapping[v]: np.random.randint(0, 255, 3) for v in class_mapping}
     C.num_rois = int(options.num_rois)
-    '''
-    if C.network == 'resnet50':
-        NUM_FEATURES = 1024
-    elif C.network == 'vgg':
-        NUM_FEATURES = 512
-    if K.image_dim_ordering() == 'th':
-        input_shape_img = (3, None, None)
-        input_shape_features = (NUM_FEATURES, None, None)
-    else:
-        input_shape_img = (None, None, 3)
-        input_shape_features = (None, None, NUM_FEATURES)
-    '''
 
     input_shape_img = (None, None, 3)
     input_shape_features = (None, None, C.num_features)
@@ -213,21 +196,17 @@ if __name__ == "__main__":
     model_rpn.compile(optimizer='sgd', loss='mse')
     model_classifier.compile(optimizer='sgd', loss='mse')
 
-    #all_imgs = []
+    all_imgs = []
     classes = {}
     all_imgs, _, _ = get_data(options.test_path)
-    test_imgs = [s for s in all_imgs if s['imageset'] == 'train']
+    #test_imgs = [s for s in all_imgs if s['imageset'] == 'train']      # mAP
     print("DEBUGGING 218: test imgs: ", len(test_imgs))
     classification_threshold = 0.8		# threshold above which we classify as positive
-    # visualise = True
 
     # for mAP
     T, P = {}, {}
 
     counter = 0
-    #for idx, img_name in enumerate(sorted(os.listdir(img_path))):
-    #    if not img_name.lower().endswith(('.bmp', '.jpeg', '.jpg', '.png', '.tif', '.tiff')):
-    #        continue
     for idx, img_data in enumerate(test_imgs):
         print('{}/{}'.format(idx, len(test_imgs)))
         img_name = img_data['filepath'].split('/')[-1]
@@ -241,10 +220,7 @@ if __name__ == "__main__":
         img = cv2.imread(filepath)
 
         X, ratio, fx, fy = format_img(img, C)
-        '''
-        if K.image_dim_ordering() == 'tf':
-            X = np.transpose(X, (0, 2, 3, 1))
-        '''
+
         assert K.image_dim_ordering() == 'tf'
         X = np.transpose(X, (0, 2, 3, 1))
 
@@ -282,7 +258,6 @@ if __name__ == "__main__":
 
                 if np.max(pred_cls[0, ii, :]) < classification_threshold or np.argmax(pred_cls[0, ii, :]) == (pred_cls.shape[2] - 1):
                     pass
-                    #continue        # avoid plotting background bbox
 
                 cls_name = class_mapping[np.argmax(pred_cls[0, ii, :])]
 
@@ -305,15 +280,14 @@ if __name__ == "__main__":
                 bboxes[cls_name].append([C.rpn_stride*x, C.rpn_stride*y, C.rpn_stride*(x+w), C.rpn_stride*(y+h)])
                 probs[cls_name].append(np.max(pred_cls[0, ii, :]))
 
-        bboxes.pop('bg')  # added to avoid plotting background bbox
-        probs.pop('bg')  # added to avoid plotting background bbox
+        bboxes.pop('bg')    # added to avoid plotting background bbox
+        probs.pop('bg')     # added to avoid plotting background bbox
 
         pred_bboxs = []
 
         for key in bboxes:
             bbox = np.array(bboxes[key])
 
-            ####### modify overlap_thresh
             new_boxes, new_probs = roi_helpers.non_max_suppression_fast(bbox, np.array(probs[key]), overlap_thresh=0.5)
             for jk in range(new_boxes.shape[0]):
                 (x1, y1, x2, y2) = new_boxes[jk, :]
@@ -323,23 +297,20 @@ if __name__ == "__main__":
                 cv2.rectangle(img,(real_x1, real_y1), (real_x2, real_y2), (int(class_to_color[key][0]), int(class_to_color[key][1]), int(class_to_color[key][2])),2)
 
                 textLabel = '{}: {}'.format(key, int(100*new_probs[jk]))
-                #pred_bboxs.append((key, 100*new_probs[jk]))
                 pred_bboxs.append({'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'class': key, 'prob': new_probs[jk]})
 
                 (retval,baseLine) = cv2.getTextSize(textLabel,cv2.FONT_HERSHEY_COMPLEX,1,1)
                 textOrg = (real_x1, real_y1-0)
 
-                # cv2.rectangle(img, (textOrg[0] - 5, textOrg[1]+baseLine - 5), (textOrg[0]+retval[0] + 5, textOrg[1]-retval[1] - 5), (0, 0, 0), 2)
                 cv2.rectangle(img, (textOrg[0] - 5,textOrg[1]+baseLine - 5), (textOrg[0]+retval[0] + 5, textOrg[1]-retval[1] - 5), (255, 255, 255), -1)
                 cv2.putText(img, textLabel, textOrg, cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1)
 
         print('Elapsed time = {}'.format(time.time() - start_time))
         print("pred_bboxs:", pred_bboxs)
-        print("gt boxes:", img_data['bboxes'])
-        # cv2.imshow('img', img)
-        # cv2.waitKey(0)
-        cv2.imwrite('./results_imgs/{}'.format(img_name), img)  ####### modify idx to img_name
+        #print("gt boxes:", img_data['bboxes'])
+        cv2.imwrite('./results_imgs/{}'.format(img_name), img)
 
+        '''
         # Calculate mAP
         t, p = get_map(pred_bboxs, img_data['bboxes'], (fx, fy))
         for key in t.keys():
@@ -349,21 +320,13 @@ if __name__ == "__main__":
             T[key].extend(t[key])
             P[key].extend(p[key])
         all_aps = []
-        #print("T:", T[key])
-        #print("P:", P[key])
         for key in T.keys():
-            #for i in range(len(T[key])):
-            #    T[key][i] = 1 if T[key][i] > 0.5 else 0
-            #    P[key][i] = 1 if P[key][i] > 0.5 else 0
             print("T:", T[key])
             print("P:", P[key])
-            #if (T[key].count(0) == len(T[key]) and P[key].count(0) == len(P[key])) or (T[key]==0 and P[key]==1):
-            #    continue
             ap = average_precision_score(T[key], P[key])
             print('{} AP: {}'.format(key, ap))
             if ap == float('nan'):
                 continue
             all_aps.append(ap)
         print('mAP = {}'.format(np.mean(np.array(all_aps))))
-        # print(T)
-        # print(P)
+        '''

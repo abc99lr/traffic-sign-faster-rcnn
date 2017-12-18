@@ -39,6 +39,7 @@ def set_config(options):
     if options.network == 'fcnet':
         C.network = 'fcnet'
         C.num_features = 64
+        C.rpn_stride = 4
         from keras_frcnn import fcnet as nn
     elif options.network == 'zfnet':
         C.network = 'zfnet'

@@ -121,9 +121,9 @@ def nn_base(input_tensor=None, trainable=False):
 
     """ Layer 5: deleted the pooling layer """
     conv5 = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu')(conv4)
-    # pool5 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same')(conv5)
+    pool5 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same')(conv5)
     #print("DEBUGGING 61: conv5 shape =", conv5.output_shape())
-    x = conv5
+    x = pool5
     print("DEBUGGING: simple_net 45: x shape =", x.shape)
     return x
 

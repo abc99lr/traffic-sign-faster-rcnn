@@ -21,7 +21,7 @@ class Config:
         self.anchor_box_scales = [8, 16, 32, 64]
 
         # anchor box ratios
-        self.anchor_box_ratios = [[1, 1], [1, 2], [2, 1]]
+        self.anchor_box_ratios = [[1, 1]]
 
         # size to resize the smallest side of the image
         self.im_size = 600
@@ -34,7 +34,7 @@ class Config:
         self.num_rois = 32	 # defaulted to 32 in train and test
 
         # stride at the RPN (this depends on the network configuration)
-        self.rpn_stride = 4
+        self.rpn_stride = 8
 
         # length feature map (output of base ConvNet)
         self.num_features = 256
