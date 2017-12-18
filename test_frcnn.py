@@ -352,13 +352,13 @@ if __name__ == "__main__":
         #print("T:", T[key])
         #print("P:", P[key])
         for key in T.keys():
-            for i in range(len(T[key])):
-                T[key][i] = 1 if T[key][i] > 0.5 else 0
-                P[key][i] = 1 if P[key][i] > 0.5 else 0
+            #for i in range(len(T[key])):
+            #    T[key][i] = 1 if T[key][i] > 0.5 else 0
+            #    P[key][i] = 1 if P[key][i] > 0.5 else 0
             print("T:", T[key])
             print("P:", P[key])
-            if (T[key].count(0) == len(T[key]) and P[key].count(0) == len(P[key])) or (T[key]==0 and P[key]==1):
-                continue
+            #if (T[key].count(0) == len(T[key]) and P[key].count(0) == len(P[key])) or (T[key]==0 and P[key]==1):
+            #    continue
             ap = average_precision_score(T[key], P[key])
             print('{} AP: {}'.format(key, ap))
             if ap != float('nan'):
